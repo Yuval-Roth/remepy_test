@@ -8,20 +8,15 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetDefaults
-import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -29,13 +24,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.yuval.remepy_test.model.Task
+import com.yuval.remepy_test.view.components.TaskCard
 import com.yuval.remepy_test.viewmodel.MainViewModel
-import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -46,22 +42,56 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Main()
+            MaterialTheme {
+                Main()
+            }
         }
     }
 
 
     @Composable
     fun Main() {
-        val scope = rememberCoroutineScope()
         var showBottomSheet by remember { mutableStateOf(false) }
         val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val tasks = remember {
+            listOf(
+                Task(
+                    title = "Finish task card component",
+                    body = "Create a polished reusable card with collapsed and expanded states, a due date section, and an action menu.",
+                    isDone = false,
+                    creationDate = LocalDateTime.now(),
+                    dueDate = LocalDateTime.now().plusDays(2).withHour(18).withMinute(0)
+                ),
+                Task(
+                    title = "Review reminders flow",
+                    body = "Check how task actions should connect to the rest of the app once edit and delete flows exist.",
+                    isDone = false,
+                    creationDate = LocalDateTime.now(),
+                    dueDate = LocalDateTime.now().plusDays(5).withHour(10).withMinute(30)
+                )
+            )
+        }
 
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp, vertical = 24.dp)
+                .navigationBarsPadding(),
+            contentAlignment = Alignment.TopCenter
         ) {
-            // content
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Text(
+                    text = "Tasks",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                tasks.forEach { task ->
+                    TaskCard(task = task)
+                }
+            }
         }
 
         if(showBottomSheet){
