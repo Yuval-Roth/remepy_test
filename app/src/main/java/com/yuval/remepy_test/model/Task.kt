@@ -1,19 +1,16 @@
 package com.yuval.remepy_test.model
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 
-class Task(
-    title: String,
-    body: String,
-    isDone: Boolean,
+@Entity(tableName = "tasks")
+data class Task(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val title: String,
+    val body: String,
+    val isDone: Boolean,
     val creationDate: LocalDateTime,
-    dueDate: LocalDateTime
-){
-    var title by mutableStateOf(title)
-    var body by mutableStateOf(body)
-    var isDone by mutableStateOf(isDone)
-    var dueDate by mutableStateOf(dueDate)
-}
+    val dueDate: LocalDateTime
+)

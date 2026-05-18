@@ -16,8 +16,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,7 +33,6 @@ import com.yuval.remepy_test.view.components.BottomSheet
 import com.yuval.remepy_test.view.components.TodoHeader
 import com.yuval.remepy_test.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -57,24 +56,7 @@ class MainActivity : ComponentActivity() {
         var showBottomSheet by remember { mutableStateOf(false) }
         var taskBeingEdited by remember { mutableStateOf<Task?>(null) }
         val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        val tasks = remember {
-            mutableStateListOf(
-                Task(
-                    title = "Finish task card component",
-                    body = "Create a polished reusable card with collapsed and expanded states, a due date section, and an action menu.",
-                    isDone = false,
-                    creationDate = LocalDateTime.now(),
-                    dueDate = LocalDateTime.now().plusDays(2).withHour(18).withMinute(0)
-                ),
-                Task(
-                    title = "Review reminders flow",
-                    body = "Check how task actions should connect to the rest of the app once edit and delete flows exist.",
-                    isDone = false,
-                    creationDate = LocalDateTime.now(),
-                    dueDate = LocalDateTime.now().plusDays(5).withHour(10).withMinute(30)
-                )
-            )
-        }
+        val tasks by viewModel.tasks.collectAsState()
 
         Box(
             modifier = Modifier
@@ -103,7 +85,10 @@ class MainActivity : ComponentActivity() {
                         onEdit = { selectedTask ->
                             taskBeingEdited = selectedTask
                             showBottomSheet = true
-                        }
+                        },
+                        onToggleDone = viewModel::toggleTaskDone,
+                        onMarkDone = viewModel::markTaskDone,
+                        onDelete = viewModel::deleteTask
                     )
                 }
             }
@@ -123,19 +108,18 @@ class MainActivity : ComponentActivity() {
                     onSave = { input ->
                         val editedTask = taskBeingEdited
                         if (editedTask == null) {
-                            tasks.add(
-                                Task(
-                                    title = input.title,
-                                    body = input.body,
-                                    isDone = false,
-                                    creationDate = LocalDateTime.now(),
-                                    dueDate = input.dueDate
-                                )
+                            viewModel.addTask(
+                                title = input.title,
+                                body = input.body,
+                                dueDate = input.dueDate
                             )
                         } else {
-                            editedTask.title = input.title
-                            editedTask.body = input.body
-                            editedTask.dueDate = input.dueDate
+                            viewModel.updateTask(
+                                task = editedTask,
+                                title = input.title,
+                                body = input.body,
+                                dueDate = input.dueDate
+                            )
                         }
                         scope.launch {
                             bottomSheetState.hide()

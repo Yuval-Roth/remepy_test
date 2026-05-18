@@ -49,7 +49,10 @@ private val DueDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("M
 @Composable
 fun TaskCard(
     task: Task,
-    onEdit: (Task) -> Unit
+    onEdit: (Task) -> Unit,
+    onToggleDone: (Task) -> Unit,
+    onMarkDone: (Task) -> Unit,
+    onDelete: (Task) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
@@ -91,14 +94,17 @@ fun TaskCard(
                         isDone = task.isDone,
                         onDismiss = { menuExpanded = false },
                         onToggleDone = {
-                            task.isDone = !task.isDone
                             menuExpanded = false
+                            onToggleDone(task)
                         },
                         onEdit = {
                             menuExpanded = false
                             onEdit(task)
                         },
-                        onDelete = { menuExpanded = false }
+                        onDelete = {
+                            menuExpanded = false
+                            onDelete(task)
+                        }
                     )
                 }
             }
@@ -149,7 +155,7 @@ fun TaskCard(
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                     Button(
-                        onClick = { task.isDone = true },
+                        onClick = { onMarkDone(task) },
                         enabled = !task.isDone,
                         modifier = Modifier
                             .fillMaxWidth()
