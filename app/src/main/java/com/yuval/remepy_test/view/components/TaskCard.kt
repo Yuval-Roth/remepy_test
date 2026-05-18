@@ -96,8 +96,8 @@ fun TaskCard(task: Task) {
                         expanded = menuExpanded,
                         isDone = task.isDone,
                         onDismiss = { menuExpanded = false },
-                        onMarkDone = {
-                            task.isDone = true
+                        onToggleDone = {
+                            task.isDone = !task.isDone
                             menuExpanded = false
                         },
                         onEdit = { menuExpanded = false },
@@ -163,7 +163,7 @@ private fun TaskActionsMenu(
     expanded: Boolean,
     isDone: Boolean,
     onDismiss: () -> Unit,
-    onMarkDone: () -> Unit,
+    onToggleDone: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -173,16 +173,17 @@ private fun TaskActionsMenu(
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
     ) {
         DropdownMenuItem(
-            text = { Text(if (isDone) "Done" else "Mark as done") },
-            leadingIcon = { CheckIcon(enabled = !isDone) },
-            enabled = !isDone,
-            onClick = onMarkDone
+            text = { Text(if (isDone) "Mark as not done" else "Mark as done") },
+            leadingIcon = { CheckIcon(enabled = true) },
+            onClick = onToggleDone
         )
-        DropdownMenuItem(
-            text = { Text("Edit") },
-            leadingIcon = { EditIcon() },
-            onClick = onEdit
-        )
+        if (!isDone) {
+            DropdownMenuItem(
+                text = { Text("Edit") },
+                leadingIcon = { EditIcon() },
+                onClick = onEdit
+            )
+        }
         DropdownMenuItem(
             text = { Text("Delete") },
             leadingIcon = { DeleteIcon() },
