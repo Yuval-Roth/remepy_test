@@ -18,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yuval.remepy_test.model.Task
 import com.yuval.remepy_test.view.components.TaskCard
+import com.yuval.remepy_test.view.components.ActionBar
 import com.yuval.remepy_test.view.components.TodoHeader
 import com.yuval.remepy_test.viewmodel.MainViewModel
 import java.time.LocalDateTime
@@ -81,10 +81,16 @@ class MainActivity : ComponentActivity() {
             contentAlignment = Alignment.TopCenter
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 30.dp)
+                ,
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 TodoHeader()
+                ActionBar(
+                    onAddTaskClick = { showBottomSheet = true }
+                )
                 tasks.forEach { task ->
                     TaskCard(task = task)
                 }

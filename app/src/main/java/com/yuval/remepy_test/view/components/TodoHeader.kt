@@ -33,13 +33,12 @@ fun TodoHeader(modifier: Modifier = Modifier) {
             modifier = modifier
                 .fillMaxWidth()
             ,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 10.dp),
+                ,
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
