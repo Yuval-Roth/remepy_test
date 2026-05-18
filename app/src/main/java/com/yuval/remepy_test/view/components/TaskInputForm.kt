@@ -1,9 +1,12 @@
 package com.yuval.remepy_test.view.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.yuval.remepy_test.model.Task
@@ -70,7 +74,8 @@ fun TaskInputForm(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text(
-            text = if (isEditing) "Edit task" else "New task",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = if (isEditing) "Edit task" else "Create a new task",
             style = MaterialTheme.typography.headlineSmall
         )
 
@@ -132,14 +137,20 @@ fun TaskInputForm(
             }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            Modifier
+                .height(1.dp)
+                .fillMaxWidth()
+                .background(color = Color(0xFFC9C9C9))
+            ,
+        )
+
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
+            ,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            TextButton(onClick = onCancel) {
-                Text("Cancel")
-            }
             Button(
                 onClick = {
                     showValidation = true
@@ -155,6 +166,9 @@ fun TaskInputForm(
                 }
             ) {
                 Text(if (isEditing) "Save changes" else "Add task")
+            }
+            TextButton(onClick = onCancel) {
+                Text("Cancel")
             }
         }
     }

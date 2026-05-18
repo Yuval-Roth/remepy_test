@@ -26,7 +26,7 @@ fun BottomSheet(
         Box(
             modifier = Modifier.Companion
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f),
+                .fillMaxHeight(0.85f),
         ) {
             content()
         }
