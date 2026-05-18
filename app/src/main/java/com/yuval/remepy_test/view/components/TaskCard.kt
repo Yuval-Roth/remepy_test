@@ -6,7 +6,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,12 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,15 +34,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.yuval.remepy_test.R
 import com.yuval.remepy_test.model.Task
 import java.time.format.DateTimeFormatter
 
@@ -90,7 +87,6 @@ fun TaskCard(task: Task) {
                 Box {
                     ThreeDotButton(
                         onClick = { menuExpanded = true },
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     TaskActionsMenu(
                         expanded = menuExpanded,
@@ -174,19 +170,39 @@ private fun TaskActionsMenu(
     ) {
         DropdownMenuItem(
             text = { Text(if (isDone) "Mark as not done" else "Mark as done") },
-            leadingIcon = { CheckIcon(enabled = true) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(
+                        id = if (isDone) R.drawable.undo_24px else R.drawable.check_24px
+                    ),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
             onClick = onToggleDone
         )
         if (!isDone) {
             DropdownMenuItem(
                 text = { Text("Edit") },
-                leadingIcon = { EditIcon() },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.edit_24px),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
                 onClick = onEdit
             )
         }
         DropdownMenuItem(
             text = { Text("Delete") },
-            leadingIcon = { DeleteIcon() },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.delete_24px),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
             onClick = onDelete
         )
     }
@@ -194,100 +210,13 @@ private fun TaskActionsMenu(
 
 @Composable
 private fun ThreeDotButton(
-    onClick: () -> Unit,
-    color: Color
+    onClick: () -> Unit
 ) {
     IconButton(onClick = onClick) {
-        Canvas(modifier = Modifier.size(22.dp)) {
-            val radius = 2.4.dp.toPx()
-            val centerX = size.width / 2f
-            val spacing = 6.5.dp.toPx()
-            drawCircle(color = color, radius = radius, center = Offset(centerX, size.height / 2f - spacing))
-            drawCircle(color = color, radius = radius, center = Offset(centerX, size.height / 2f))
-            drawCircle(color = color, radius = radius, center = Offset(centerX, size.height / 2f + spacing))
-        }
-    }
-}
-
-@Composable
-private fun CheckIcon(enabled: Boolean) {
-    val color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-    Canvas(modifier = Modifier.size(20.dp)) {
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.18f, size.height * 0.52f),
-            end = Offset(size.width * 0.42f, size.height * 0.74f),
-            strokeWidth = 2.5.dp.toPx(),
-            cap = StrokeCap.Round
-        )
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.42f, size.height * 0.74f),
-            end = Offset(size.width * 0.82f, size.height * 0.28f),
-            strokeWidth = 2.5.dp.toPx(),
-            cap = StrokeCap.Round
-        )
-    }
-}
-
-@Composable
-private fun EditIcon() {
-    val color = MaterialTheme.colorScheme.onSurfaceVariant
-    Canvas(modifier = Modifier.size(20.dp)) {
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.25f, size.height * 0.75f),
-            end = Offset(size.width * 0.74f, size.height * 0.26f),
-            strokeWidth = 2.2.dp.toPx(),
-            cap = StrokeCap.Round
-        )
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.66f, size.height * 0.18f),
-            end = Offset(size.width * 0.82f, size.height * 0.34f),
-            strokeWidth = 2.2.dp.toPx(),
-            cap = StrokeCap.Round
-        )
-        val tip = Path().apply {
-            moveTo(size.width * 0.20f, size.height * 0.80f)
-            lineTo(size.width * 0.34f, size.height * 0.76f)
-            lineTo(size.width * 0.24f, size.height * 0.66f)
-            close()
-        }
-        drawPath(path = tip, color = color)
-    }
-}
-
-@Composable
-private fun DeleteIcon() {
-    val color = MaterialTheme.colorScheme.error
-    Canvas(modifier = Modifier.size(20.dp)) {
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.25f, size.height * 0.34f),
-            end = Offset(size.width * 0.75f, size.height * 0.34f),
-            strokeWidth = 2.dp.toPx(),
-            cap = StrokeCap.Round
-        )
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.36f, size.height * 0.44f),
-            end = Offset(size.width * 0.40f, size.height * 0.80f),
-            strokeWidth = 2.dp.toPx(),
-            cap = StrokeCap.Round
-        )
-        drawLine(
-            color = color,
-            start = Offset(size.width * 0.64f, size.height * 0.44f),
-            end = Offset(size.width * 0.60f, size.height * 0.80f),
-            strokeWidth = 2.dp.toPx(),
-            cap = StrokeCap.Round
-        )
-        drawRoundRect(
-            color = color,
-            topLeft = Offset(size.width * 0.30f, size.height * 0.38f),
-            size = androidx.compose.ui.geometry.Size(size.width * 0.40f, size.height * 0.48f),
-            style = Stroke(width = 1.8.dp.toPx())
+        Icon(
+            painter = painterResource(id = R.drawable.more_vert_24px),
+            contentDescription = "Task actions",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
