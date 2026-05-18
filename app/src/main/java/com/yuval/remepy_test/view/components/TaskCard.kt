@@ -151,8 +151,13 @@ fun TaskCard(
                             .padding(start = 15.dp, top = 5.dp, end = 15.dp)
                     ) {
                         Text(
-                            text = task.body,
+                            text = task.body.ifBlank { "No description" },
                             style = MaterialTheme.typography.bodyLarge,
+                            color = if (task.body.isBlank()) {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.58f)
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
                         )
                         Spacer(modifier = Modifier.height(22.dp))
                         Text(

@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +59,7 @@ class MainActivity : ComponentActivity() {
         var showBottomSheet by remember { mutableStateOf(false) }
         var taskBeingEdited by remember { mutableStateOf<Task?>(null) }
         val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val taskListState = rememberLazyListState()
         val tasks by viewModel.tasks.collectAsState()
 
         Box(
@@ -87,17 +91,28 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 } else {
-                    tasks.forEach { task ->
-                        TaskCard(
-                            task = task,
-                            onEdit = { selectedTask ->
-                                taskBeingEdited = selectedTask
-                                showBottomSheet = true
-                            },
-                            onMarkDone = viewModel::markTaskDone,
-                            onMarkNotDone = viewModel::markTaskNotDone,
-                            onDelete = viewModel::deleteTask
-                        )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        state = taskListState,
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        items(
+                            items = tasks,
+                            key = { task -> task.id }
+                        ) { task ->
+                            TaskCard(
+                                task = task,
+                                onEdit = { selectedTask ->
+                                    taskBeingEdited = selectedTask
+                                    showBottomSheet = true
+                                },
+                                onMarkDone = viewModel::markTaskDone,
+                                onMarkNotDone = viewModel::markTaskNotDone,
+                                onDelete = viewModel::deleteTask
+                            )
+                        }
                     }
                 }
             }
@@ -116,6 +131,7 @@ class MainActivity : ComponentActivity() {
                     task = taskBeingEdited,
                     onSave = { input ->
                         val editedTask = taskBeingEdited
+                        val isAddingTask = editedTask == null
                         if (editedTask == null) {
                             viewModel.addTask(
                                 title = input.title,
@@ -133,6 +149,9 @@ class MainActivity : ComponentActivity() {
                         scope.launch {
                             bottomSheetState.hide()
                             onDismiss()
+                            if (isAddingTask) {
+                                taskListState.animateScrollToItem(0)
+                            }
                         }
                     },
                     onCancel = {
