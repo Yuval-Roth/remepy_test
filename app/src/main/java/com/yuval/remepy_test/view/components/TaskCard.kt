@@ -2,15 +2,10 @@ package com.yuval.remepy_test.view.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.EaseInOutExpo
 import androidx.compose.animation.core.EaseInOutQuad
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +47,10 @@ import java.time.format.DateTimeFormatter
 private val DueDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy, HH:mm")
 
 @Composable
-fun TaskCard(task: Task) {
+fun TaskCard(
+    task: Task,
+    onEdit: (Task) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -96,7 +94,10 @@ fun TaskCard(task: Task) {
                             task.isDone = !task.isDone
                             menuExpanded = false
                         },
-                        onEdit = { menuExpanded = false },
+                        onEdit = {
+                            menuExpanded = false
+                            onEdit(task)
+                        },
                         onDelete = { menuExpanded = false }
                     )
                 }
@@ -106,14 +107,14 @@ fun TaskCard(task: Task) {
                 visible = expanded,
                 enter = expandVertically(
                     animationSpec = tween(
-                        durationMillis = 150,
+                        durationMillis = 100,
                         easing = EaseInOutQuad
                     ),
                     expandFrom = Alignment.Top
                 ),
                 exit = shrinkVertically(
                     animationSpec = tween(
-                        durationMillis = 150,
+                        durationMillis = 100,
                         easing = EaseInOutQuad
                     ),
                     shrinkTowards = Alignment.Top
@@ -122,7 +123,7 @@ fun TaskCard(task: Task) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                ){
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()

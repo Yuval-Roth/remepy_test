@@ -8,30 +8,31 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yuval.remepy_test.model.Task
 import com.yuval.remepy_test.view.components.TaskCard
+import com.yuval.remepy_test.view.components.TaskInputForm
 import com.yuval.remepy_test.view.components.ActionBar
+import com.yuval.remepy_test.view.components.BottomSheet
 import com.yuval.remepy_test.view.components.TodoHeader
 import com.yuval.remepy_test.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,10 +53,12 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun Main() {
+        val scope = rememberCoroutineScope()
         var showBottomSheet by remember { mutableStateOf(false) }
+        var taskBeingEdited by remember { mutableStateOf<Task?>(null) }
         val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         val tasks = remember {
-            listOf(
+            mutableStateListOf(
                 Task(
                     title = "Finish task card component",
                     body = "Create a polished reusable card with collapsed and expanded states, a due date section, and an action menu.",
@@ -89,10 +92,19 @@ class MainActivity : ComponentActivity() {
             ) {
                 TodoHeader()
                 ActionBar(
-                    onAddTaskClick = { showBottomSheet = true }
+                    onAddTaskClick = {
+                        taskBeingEdited = null
+                        showBottomSheet = true
+                    }
                 )
                 tasks.forEach { task ->
-                    TaskCard(task = task)
+                    TaskCard(
+                        task = task,
+                        onEdit = { selectedTask ->
+                            taskBeingEdited = selectedTask
+                            showBottomSheet = true
+                        }
+                    )
                 }
             }
         }
@@ -100,31 +112,44 @@ class MainActivity : ComponentActivity() {
         if(showBottomSheet){
             BottomSheet(
                 bottomSheetState,
-                onDismiss = { showBottomSheet = false }
+                onDismiss = {
+                    showBottomSheet = false
+                    taskBeingEdited = null
+                }
             ) {
-                // content
-            }
-        }
-    }
-
-    @Composable
-    fun BottomSheet(
-        state: SheetState,
-        onDismiss: () -> Unit,
-        content: @Composable () -> Unit
-    ) {
-        ModalBottomSheet(
-            sheetState = state,
-            onDismissRequest = onDismiss,
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.8f)
-                ,
-            ) {
-                content()
+                TaskInputForm(
+                    task = taskBeingEdited,
+                    onSave = { input ->
+                        val editedTask = taskBeingEdited
+                        if (editedTask == null) {
+                            tasks.add(
+                                Task(
+                                    title = input.title,
+                                    body = input.body,
+                                    isDone = false,
+                                    creationDate = LocalDateTime.now(),
+                                    dueDate = input.dueDate
+                                )
+                            )
+                        } else {
+                            editedTask.title = input.title
+                            editedTask.body = input.body
+                            editedTask.dueDate = input.dueDate
+                        }
+                        scope.launch {
+                            bottomSheetState.hide()
+                            showBottomSheet = false
+                            taskBeingEdited = null
+                        }
+                    },
+                    onCancel = {
+                        scope.launch {
+                            bottomSheetState.hide()
+                            showBottomSheet = false
+                            taskBeingEdited = null
+                        }
+                    }
+                )
             }
         }
     }
