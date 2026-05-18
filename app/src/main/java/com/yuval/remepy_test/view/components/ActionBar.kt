@@ -37,7 +37,7 @@ fun ActionBar(
         shape = RectangleShape,
         color = MaterialTheme.colorScheme.surface,
     ) {
-        Column(){
+        Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

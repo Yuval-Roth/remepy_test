@@ -20,14 +20,14 @@ abstract class TaskDatabase : RoomDatabase() {
         private var instance: TaskDatabase? = null
 
         fun getInstance(context: Context): TaskDatabase {
-            return instance ?: synchronized(this) {
-                instance ?: Room.databaseBuilder(
+            synchronized(this){
+                return instance ?: Room.databaseBuilder(
                     context.applicationContext,
                     TaskDatabase::class.java,
                     "tasks.db"
                 )
-                    .build()
-                    .also { instance = it }
+                .build()
+                .also { instance = it }
             }
         }
     }
