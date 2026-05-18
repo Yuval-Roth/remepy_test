@@ -56,9 +56,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun toggleTaskDone(task: Task) {
+    fun markTaskNotDone(task: Task) {
         viewModelScope.launch {
-            repository.setTaskDone(task, !task.isDone)
+            repository.setTaskDone(task, false)
         }
     }
 

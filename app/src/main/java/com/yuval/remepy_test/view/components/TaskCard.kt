@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yuval.remepy_test.R
 import com.yuval.remepy_test.model.Task
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
 private val DueDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy, HH:mm")
@@ -50,12 +53,20 @@ private val DueDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("M
 fun TaskCard(
     task: Task,
     onEdit: (Task) -> Unit,
-    onToggleDone: (Task) -> Unit,
+    onMarkNotDone: (Task) -> Unit,
     onMarkDone: (Task) -> Unit,
     onDelete: (Task) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
+    val onMarkDone = { task: Task ->
+        onMarkDone(task)
+        scope.launch {
+            delay(300)
+            expanded = false
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -95,7 +106,11 @@ fun TaskCard(
                         onDismiss = { menuExpanded = false },
                         onToggleDone = {
                             menuExpanded = false
-                            onToggleDone(task)
+                            if(task.isDone) {
+                                onMarkNotDone(task)
+                            } else {
+                                onMarkDone(task)
+                            }
                         },
                         onEdit = {
                             menuExpanded = false
@@ -155,7 +170,10 @@ fun TaskCard(
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                     Button(
-                        onClick = { onMarkDone(task) },
+                        onClick = {
+                            onMarkDone(task)
+                            menuExpanded = false
+                        },
                         enabled = !task.isDone,
                         modifier = Modifier
                             .fillMaxWidth()

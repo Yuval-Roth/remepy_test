@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun Main() {
         val scope = rememberCoroutineScope()
@@ -86,8 +85,8 @@ class MainActivity : ComponentActivity() {
                             taskBeingEdited = selectedTask
                             showBottomSheet = true
                         },
-                        onToggleDone = viewModel::toggleTaskDone,
                         onMarkDone = viewModel::markTaskDone,
+                        onMarkNotDone = viewModel::markTaskNotDone,
                         onDelete = viewModel::deleteTask
                     )
                 }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
-    @Query("SELECT * FROM tasks ORDER BY isDone ASC, dueDate ASC, creationDate ASC")
+    @Query("SELECT * FROM tasks ORDER BY creationDate ASC")
     fun observeTasks(): Flow<List<Task>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
