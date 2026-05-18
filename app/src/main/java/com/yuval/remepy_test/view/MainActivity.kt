@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.yuval.remepy_test.model.Task
 import com.yuval.remepy_test.view.components.TaskCard
+import com.yuval.remepy_test.view.components.TodoHeader
 import com.yuval.remepy_test.viewmodel.MainViewModel
 import java.time.LocalDateTime
 
@@ -83,11 +84,7 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Text(
-                    text = "Tasks",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                TodoHeader()
                 tasks.forEach { task ->
                     TaskCard(task = task)
                 }
