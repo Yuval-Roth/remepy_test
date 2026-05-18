@@ -30,6 +30,7 @@ import com.yuval.remepy_test.view.components.TaskCard
 import com.yuval.remepy_test.view.components.TaskInputForm
 import com.yuval.remepy_test.view.components.ActionBar
 import com.yuval.remepy_test.view.components.BottomSheet
+import com.yuval.remepy_test.view.components.EmptyTaskList
 import com.yuval.remepy_test.view.components.TodoHeader
 import com.yuval.remepy_test.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
@@ -78,17 +79,26 @@ class MainActivity : ComponentActivity() {
                         showBottomSheet = true
                     }
                 )
-                tasks.forEach { task ->
-                    TaskCard(
-                        task = task,
-                        onEdit = { selectedTask ->
-                            taskBeingEdited = selectedTask
+                if (tasks.isEmpty()) {
+                    EmptyTaskList(
+                        onAddTaskClick = {
+                            taskBeingEdited = null
                             showBottomSheet = true
-                        },
-                        onMarkDone = viewModel::markTaskDone,
-                        onMarkNotDone = viewModel::markTaskNotDone,
-                        onDelete = viewModel::deleteTask
+                        }
                     )
+                } else {
+                    tasks.forEach { task ->
+                        TaskCard(
+                            task = task,
+                            onEdit = { selectedTask ->
+                                taskBeingEdited = selectedTask
+                                showBottomSheet = true
+                            },
+                            onMarkDone = viewModel::markTaskDone,
+                            onMarkNotDone = viewModel::markTaskNotDone,
+                            onDelete = viewModel::deleteTask
+                        )
+                    }
                 }
             }
         }

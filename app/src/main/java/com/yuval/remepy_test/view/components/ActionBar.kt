@@ -1,9 +1,14 @@
 package com.yuval.remepy_test.view.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,44 +37,55 @@ fun ActionBar(
         shape = RectangleShape,
         color = MaterialTheme.colorScheme.surface,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(45.dp)
-            ,
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            // Add Task Button
-            IconButton(
+        Column(){
+            Row(
                 modifier = Modifier
-                    .width(120.dp)
+                    .fillMaxWidth()
+                    .height(45.dp)
                 ,
-                onClick = onAddTaskClick,
-                shape = RoundedCornerShape(25),
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                )
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Icon(
-                        painter = painterResource(id = R.drawable.add_circle_24px),
-                        contentDescription = "Add task",
-                        tint = Color.Black
+
+                // Add Task Button
+                IconButton(
+                    modifier = Modifier
+                        .width(120.dp)
+                    ,
+                    onClick = onAddTaskClick,
+                    shape = RoundedCornerShape(25),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                     )
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp),
-                        text = "Add Task",
-                        color = Color.Black,
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Icon(
+                            painter = painterResource(id = R.drawable.add_circle_24px),
+                            contentDescription = "Add task",
+                            tint = Color.Black
+                        )
+                        Text(
+                            modifier = Modifier.padding(start = 8.dp),
+                            text = "Add Task",
+                            color = Color.Black,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
             }
-
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .height(1.dp)
+                    .background(
+                        color = Color(0xFFC9C9C9).copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(3.dp)
+                    )
+            )
         }
     }
 }
