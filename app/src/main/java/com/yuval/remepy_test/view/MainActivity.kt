@@ -110,12 +110,13 @@ class MainActivity : ComponentActivity() {
         }
 
         if(showBottomSheet){
+            val onDismiss = {
+                showBottomSheet = false
+                taskBeingEdited = null
+            }
             BottomSheet(
                 bottomSheetState,
-                onDismiss = {
-                    showBottomSheet = false
-                    taskBeingEdited = null
-                }
+                onDismiss = onDismiss
             ) {
                 TaskInputForm(
                     task = taskBeingEdited,
@@ -138,15 +139,13 @@ class MainActivity : ComponentActivity() {
                         }
                         scope.launch {
                             bottomSheetState.hide()
-                            showBottomSheet = false
-                            taskBeingEdited = null
+                            onDismiss()
                         }
                     },
                     onCancel = {
                         scope.launch {
                             bottomSheetState.hide()
-                            showBottomSheet = false
-                            taskBeingEdited = null
+                            onDismiss()
                         }
                     }
                 )
